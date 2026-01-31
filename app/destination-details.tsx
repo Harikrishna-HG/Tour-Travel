@@ -1,5 +1,8 @@
+import { ErrorMessage } from '@/components/travel/ErrorMessage';
+import { LoadingSpinner } from '@/components/travel/LoadingSpinner';
 import { TourCard } from '@/components/travel/TourCard';
-import { Destination, destinations, Tour, tours } from '@/data/travelData';
+import { useDestination, useTours } from '@/hooks/useFirebase';
+import type { Tour } from '@/services/firebaseService';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -9,21 +12,36 @@ export default function DestinationDetailsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const destinationId = params.id as string;
-
-  const destination = destinations.find((d: Destination) => d.id === destinationId);
-  const destinationTours = tours.filter((t: Tour) => t.destinationId === destinationId);
-
   const [showFullDescription, setShowFullDescription] = useState(false);
 
-  if (!destination) {
+  // Fetch data from Firebase
+  const { destination, loading: destinationLoading, error: destinationError } = useDestination(destinationId);
+  const { tours: destinationTours, loading: toursLoading } = useTours(destinationId);
+
+  // Show loading state
+  if (destinationLoading || toursLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Destination not found</Text>
+        <LoadingSpinner message="Loading destination details..." />
       </SafeAreaView>
     );
   }
 
-  const shortDescription = destination.description.substring(0, 100) + '...';
+  // Show error or not found state
+  if (destinationError || !destination) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ErrorMessage
+          message={destinationError || 'Destination not found'}
+          onRetry={() => router.back()}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  const shortDescription = destination.description.length > 100
+    ? destination.description.substring(0, 100) + '...'
+    : destination.description;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,32 +73,34 @@ export default function DestinationDetailsScreen() {
         </View>
 
         {/* Upcoming Tours */}
-        <View style={styles.toursSection}>
-          <Text style={styles.sectionTitle}>Upcoming tours</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.toursContent}
-          >
-            {destinationTours.map((tour: Tour) => (
-              <TourCard
-                key={tour.id}
-                title={tour.title}
-                image={tour.image}
-                duration={tour.duration}
-                price={tour.price}
-                rating={tour.rating}
-                reviews={tour.reviews}
-                onPress={() =>
-                  router.push({
-                    pathname: '/itinerary',
-                    params: { tourId: tour.id },
-                  })
-                }
-              />
-            ))}
-          </ScrollView>
-        </View>
+        {destinationTours.length > 0 && (
+          <View style={styles.toursSection}>
+            <Text style={styles.sectionTitle}>Upcoming tours</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.toursContent}
+            >
+              {destinationTours.map((tour: Tour) => (
+                <TourCard
+                  key={tour.id}
+                  title={tour.title}
+                  image={{ uri: tour.image }}
+                  duration={tour.duration}
+                  price={tour.price}
+                  rating={tour.rating}
+                  reviews={tour.reviews}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/itinerary',
+                      params: { tourId: tour.id },
+                    })
+                  }
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.bottomPadding} />
       </ScrollView>

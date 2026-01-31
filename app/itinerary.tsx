@@ -1,5 +1,8 @@
+import { ErrorMessage } from '@/components/travel/ErrorMessage';
+import { LoadingSpinner } from '@/components/travel/LoadingSpinner';
 import { PrimaryButton } from '@/components/travel/PrimaryButton';
-import { itineraries, ItineraryDay, Tour, TourItinerary, tours } from '@/data/travelData';
+import { useItinerary, useTour } from '@/hooks/useFirebase';
+import type { ItineraryDay } from '@/services/firebaseService';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -10,13 +13,27 @@ export default function ItineraryScreen() {
   const params = useLocalSearchParams();
   const tourId = params.tourId as string;
 
-  const tour = tours.find((t: Tour) => t.id === tourId);
-  const itinerary = itineraries.find((i: TourItinerary) => i.tourId === tourId);
+  // Fetch data from Firebase
+  const { tour, loading: tourLoading, error: tourError } = useTour(tourId);
+  const { itinerary, loading: itineraryLoading, error: itineraryError } = useItinerary(tourId);
 
-  if (!tour || !itinerary) {
+  // Show loading state
+  if (tourLoading || itineraryLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Tour not found</Text>
+        <LoadingSpinner message="Loading tour details..." />
+      </SafeAreaView>
+    );
+  }
+
+  // Show error or not found state
+  if (tourError || itineraryError || !tour || !itinerary) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ErrorMessage
+          message={tourError || itineraryError || 'Tour not found'}
+          onRetry={() => router.back()}
+        />
       </SafeAreaView>
     );
   }
