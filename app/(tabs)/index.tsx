@@ -1,103 +1,141 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Travel App</ThemedText>
-        <Link href="/destination-selection">
-          <ThemedText type="link">Open Travel App →</ThemedText>
-        </Link>
-        <ThemedText>
-          Explore destinations, view tours, and plan your next adventure!
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+  return (
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.header}>
+        <Ionicons name="compass" size={48} color="#2196F3" />
+        <ThemedText type="title" style={styles.title}>
+          Discover Your Next Adventure
+        </ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Explore amazing destinations around the world
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+
+      <ThemedView style={styles.content}>
+        <TouchableOpacity
+          style={styles.ctaButton}
+          onPress={() => router.push('/destination-selection')}
+        >
+          <Ionicons name="globe" size={24} color="#fff" />
+          <ThemedText style={styles.ctaButtonText}>Explore Destinations</ThemedText>
+        </TouchableOpacity>
+
+        <ThemedView style={styles.featuresSection}>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            Why Travel With Us?
+          </ThemedText>
+
+          <View style={styles.featureCard}>
+            <Ionicons name="airplane" size={32} color="#2196F3" />
+            <View style={styles.featureContent}>
+              <ThemedText style={styles.featureTitle}>Curated Destinations</ThemedText>
+              <ThemedText style={styles.featureDesc}>
+                Handpicked locations across all continents
+              </ThemedText>
+            </View>
+          </View>
+
+          <View style={styles.featureCard}>
+            <Ionicons name="star" size={32} color="#FFC107" />
+            <View style={styles.featureContent}>
+              <ThemedText style={styles.featureTitle}>Top-Rated Tours</ThemedText>
+              <ThemedText style={styles.featureDesc}>
+                Highly rated experiences and activities
+              </ThemedText>
+            </View>
+          </View>
+
+          <View style={styles.featureCard}>
+            <Ionicons name="calendar" size={32} color="#4CAF50" />
+            <View style={styles.featureContent}>
+              <ThemedText style={styles.featureTitle}>Easy Planning</ThemedText>
+              <ThemedText style={styles.featureDesc}>
+                Create and manage your travel itineraries
+              </ThemedText>
+            </View>
+          </View>
+        </ThemedView>
       </ThemedView>
-    </ParallaxScrollView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    alignItems: 'center',
+  },
+  title: {
+    marginTop: 16,
+    fontSize: 32,
+    textAlign: 'center',
+  },
+  subtitle: {
+    marginTop: 8,
+    fontSize: 16,
+    opacity: 0.7,
+    textAlign: 'center',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2196F3',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginBottom: 32,
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  ctaButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  reactLogo: {
-    height: 178,
+  featuresSection: {
+    marginBottom: 40,
+  },
+  sectionTitle: {
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  featureCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+    gap: 16,
+  },
+  featureContent: {
+    flex: 1,
+  },
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  featureDesc: {
+    fontSize: 14,
+    opacity: 0.7,
     width: 290,
     bottom: 0,
     left: 0,
