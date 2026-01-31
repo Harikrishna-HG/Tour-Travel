@@ -1,23 +1,22 @@
 // Firebase Configuration
 // To use this app, you need to:
-// 1. Go to https://console.firebase.google.com/
-// 2. Create a new project
-// 3. Add a Web app to your project
-// 4. Copy your Firebase config and replace the values below
+// 1. Copy .env.example to .env
+// 2. Add your Firebase credentials to .env file
+// 3. Never commit .env file to version control
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration loaded from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCNjW7p8jMyBYVKTyHkhe9erzkEAvVsJ4c",
-  authDomain: "travelapp-89136.firebaseapp.com",
-  projectId: "travelapp-89136",
-  storageBucket: "travelapp-89136.firebasestorage.app",
-  messagingSenderId: "826071635960",
-  appId: "1:826071635960:web:80142189b3949c5638e80d",
-  measurementId: "G-9PEMG73MWL",
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
